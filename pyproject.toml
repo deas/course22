@@ -1,0 +1,56 @@
+[project]
+name = "course22"
+version = "0.1.0"
+description = "Setup for local course22 notebooks using uv."
+requires-python = ">=3.13"
+license = "MIT"
+authors = [{ name = "Your Name", email = "your.email@example.com" }]
+
+dependencies = [
+  "ddgs",
+  "fastai",
+  "fastkaggle",
+  "gradio",
+  "graphviz",
+  "ipywidgets",
+  "jupyterlab",
+  "jupyter-ai",       # [all]",   # Should proably pick the provider we want
+  "jupyterlab-git",
+  "langchain-openai", # For openrouter
+  "kaggle",
+  "nbdev",
+  "plotly",
+  "seaborn",
+  "statsmodels",
+  "sympy",
+  "timm",
+  "transformers",
+  "torch",
+  "torchvision",
+]
+
+# TODO: Above deps are minimum - checkout # TODO: Below is minimum
+# https://github.com/ageron/handson-mlp/
+
+#[build-system]
+#requires = ["setuptools", "wheel"]
+#build-backend = "setuptools.build_meta"
+
+# Configuration for the uv tool (optional, but helpful)
+#[tool.uv]
+# Optional: Pin a specific Python version for uv to use for venv creation
+# python = "3.12"
+# https://docs.astral.sh/uv/guides/integration/pytorch/#using-a-pytorch-index
+[[tool.uv.index]]
+name = "pytorch-cpu"
+url = "https://download.pytorch.org/whl/cpu"
+explicit = true
+
+[tool.uv.sources]
+torch = [{ index = "pytorch-cpu" }]
+torchvision = [{ index = "pytorch-cpu" }]
+
+[tool.uv]
+required-environments = [
+  "sys_platform == 'linux' and platform_machine == 'x86_64'",
+]
