@@ -10,6 +10,7 @@ This is where you'll find the notebooks, slides, and spreadsheets for the 2022 e
 - `slides`: Jeremy's slide decks
 - `tools`: Ignore (tools for creating this repo)
 - `getting-started-with-codespaces`: A document to help run the notebooks in a GitHub Codespace
+- `HARDWARE.md`: Measured CPU/iGPU/NPU findings for this machine — why training runs on CPU
 
 ## Environment
 

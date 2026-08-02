@@ -33,8 +33,12 @@ file on disk while a Lab session has it open will fight the RTC layer.
 
 ## Environment constraints
 
+Measured benchmarks and the full reasoning behind the GPU/NPU verdicts live in `HARDWARE.md`.
+
 - **Python >= 3.13**, and `[tool.uv] required-environments` pins resolution to `linux` + `x86_64`.
-- **torch/torchvision resolve from the `pytorch-cpu` index** (`[tool.uv.sources]` in `pyproject.toml`). There is no GPU here. Notebooks 08–10 (paddy-disease, "Road to the Top") train large vision models and are impractically slow or will not finish on CPU — expect that, don't "fix" it by rewriting the training loop.
+- **torch/torchvision resolve from the `pytorch-cpu` index** (`[tool.uv.sources]` in `pyproject.toml`). **Treat this box as CPU-only** — but know *why*, so it doesn't get "fixed": there **is** an AMD Radeon 780M iGPU, which ROCm 7.x detects natively as `gfx1103` (`/dev/kfd` is world-readable, so no `render` group setup is needed). The blocker is that the PyTorch ROCm wheels bundle a rocBLAS with **no `gfx1103` kernels** (gfx1100/1101/1102/1150/1151 only). It runs at all only under `HSA_OVERRIDE_GFX_VERSION=11.0.0`, and that ISA mismatch makes MIOpen/Triton kernels abort intermittently with `HSA_STATUS_ERROR_INVALID_ISA`. Pointing at the system rocBLAS (which *does* have gfx1103) fails outright on Tensile format skew. Measured on this machine: conv training ~1.5× CPU with a ~50% crash rate, and autocast/AMP crashes every run. Raw fp16 matmul does reach ~6× CPU, so the silicon is real — but nothing in this repo's vision workload survives the instability. Don't re-litigate this without new upstream wheels.
+- Notebooks 08–10 (paddy-disease, "Road to the Top") train large vision models and are impractically slow or will not finish on CPU — expect that, don't "fix" it by rewriting the training loop. The iGPU does not rescue them either (see above).
+- **The RyzenAI NPU is present and also unusable here.** `rocminfo` lists an `aie2` / `RyzenAI-npu1` agent and the `amdxdna` driver is loaded (`/dev/accel/accel0`), but reaching it requires the Ryzen AI stack (ONNX Runtime + VitisAI EP) running pre-quantized INT8 models. There is no fastai or torch path to it — it cannot run a training loop at all. Ignore it.
 - `.devcontainer/` is upstream's Codespaces setup (Python 3.10, `pip install -r requirements.txt`). It is **not** the local path and its `requirements.txt` is not kept in sync with `pyproject.toml` — treat `pyproject.toml` as the source of truth.
 
 ## Notebook conventions (important when editing)
@@ -45,6 +49,9 @@ Upstream cells assume Kaggle. Local migration follows these patterns — match t
 - **`duckduckgo_search` → `ddgs`** (`from ddgs import DDGS`). The old package is dead; `ddgs` is the declared dependency.
 - **`iskaggle` branches stay.** Several notebooks (05, 06, 07, 08–10) switch on `os.environ.get('KAGGLE_KERNEL_RUN_TYPE', '')` to pick between `../input/<comp>` and a local `kaggle` API download. Keep both branches working; only the `else:` path is exercised here.
 - Notebooks 08–10 use `fastkaggle`'s `setup_comp()` / `push_notebook()`. `push_notebook` calls target Jeremy Howard's Kaggle account and are guarded by `if not iskaggle:` — leave them alone.
+- **When adding a training cell, set `defaults.cpus = 8` before building `DataLoaders`.** fastai
+  derives `num_workers` from `sched_getaffinity` and picks 16 on this 8-physical-core box, costing a
+  measured ~5% (`HARDWARE.md`). Not worth retrofitting into already-committed notebooks.
 - Notebooks are committed **with outputs**, re-executed locally. Diffs are therefore huge and noisy (base64 images, timings, absolute venv paths in warnings). Inspect changes by extracting `source` from code cells, not by reading `git diff` output.
 
 ### Migration status
