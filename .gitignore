@@ -91,6 +91,11 @@ target/
 # Jupyter Notebook
 .ipynb_checkpoints
 
+# Jupyter Lab runtime state (RTC collaboration sessions + ystore), written on
+# `just start-jupyter`
+.jupyter/
+.jupyter_ystore.db
+
 # IPython
 profile_default/
 ipython_config.py
