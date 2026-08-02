@@ -21,6 +21,16 @@ just                 # list all recipes
 
 To run a single notebook non-interactively: `uv run jupyter execute <notebook>.ipynb`.
 
+### Jupyter MCP
+
+`.mcp.json` registers `jupyter-mcp-server` (via `uvx`, pinned). Its tools operate on a **live Lab
+session**, not on files: `just start-jupyter` must already be running, and the MCP client must have
+been started after it. `JUPYTER_TOKEN` in the untracked `.env` authenticates both ends.
+
+Prefer these tools over hand-editing `.ipynb` JSON when the task is "run this cell and see what
+happens" — they execute against a real kernel and write outputs back the way Lab would. Editing the
+file on disk while a Lab session has it open will fight the RTC layer.
+
 ## Environment constraints
 
 - **Python >= 3.13**, and `[tool.uv] required-environments` pins resolution to `linux` + `x86_64`.

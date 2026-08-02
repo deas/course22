@@ -14,7 +14,9 @@ dependencies = [
   "graphviz",
   "ipywidgets",
   "jupyterlab",
-  "jupyter-ai",       # [all]",   # Should proably pick the provider we want
+  "jupyter-ai",            # [all]",   # Should proably pick the provider we want
+  "jupyter-collaboration", # RTC layer the jupyter MCP server drives notebooks through
+  "jupyter-mcp-tools",     # server extension exposing JupyterLab UI actions to MCP
   "jupyterlab-git",
   "langchain-openai", # For openrouter
   "kaggle",

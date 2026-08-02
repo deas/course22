@@ -51,8 +51,9 @@ format:
 # serve:
 #    python -m autoweb.main serve
 
-# Start jupyter lab
+# Start jupyter lab (JUPYTER_TOKEN from .env authenticates both the UI and the MCP server)
 start-jupyter:
+    @test -n "$JUPYTER_TOKEN" || { echo "JUPYTER_TOKEN is unset - add it to .env (see README)"; exit 1; }
     uv run jupyter lab --ip=0.0.0.0
 
 # # Pin dependencies
