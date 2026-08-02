@@ -17,7 +17,7 @@ just format          # ruff check --fix + ruff format (ruff is not a declared de
 just                 # list all recipes
 ```
 
-`direnv` (`.envrc`) exports `VIRTUAL_ENV=.venv` and `OPENAI_BASE_URL=https://openrouter.ai/api/v1` (for the `jupyter-ai` extension via OpenRouter; `OPENROUTER_API_KEY` comes from an untracked `.env`). Outside a direnv shell, prefix commands with `uv run`.
+`mise` (`mise.toml`) activates `.venv`, pins `python` to 3.13, exports `OPENAI_BASE_URL=https://openrouter.ai/api/v1` (for the `jupyter-ai` extension via OpenRouter) and loads the untracked `.env` (`OPENROUTER_API_KEY`, `JUPYTER_TOKEN`). Outside a mise-activated shell, prefix commands with `uv run`.
 
 To run a single notebook non-interactively: `uv run jupyter execute <notebook>.ipynb`.
 

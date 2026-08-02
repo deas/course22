@@ -1,0 +1,21 @@
+# Replaces the former .envrc / direnv setup.
+#
+# uv and just are expected on PATH rather than declared here, so this file
+# installs nothing on a machine that already has them.
+
+[tools]
+python = "3.13" # matches requires-python in pyproject.toml
+
+[env]
+# `uv sync` is what actually populates .venv; this activates it on cd, the
+# way direnv's `layout python3` did. mise creates it with `uv venv` when uv
+# is present, so an empty checkout still gets a usable interpreter.
+_.python.venv = { path = ".venv", create = true }
+
+# jupyter-ai reaches OpenRouter through its OpenAI-compatible API.
+OPENAI_BASE_URL = "https://openrouter.ai/api/v1"
+
+# Untracked secrets: OPENROUTER_API_KEY for jupyter-ai, JUPYTER_TOKEN for
+# jupyter-server and the MCP server in .mcp.json. A missing file is skipped,
+# matching direnv's dotenv_if_exists.
+_.file = { path = ".env", redact = true }
